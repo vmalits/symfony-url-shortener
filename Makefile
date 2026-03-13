@@ -1,4 +1,4 @@
-.PHONY: help install update clean cache assets check test stan stan-fix cs cs-fix rector rector-fix db db-reset migrate make-migration up down logs build ps shell prod-up prod-down worker worker-stop console
+.PHONY: help install update clean cache assets check test stan stan-fix cs cs-fix rector rector-fix db db-reset migrate make-migration up down logs build build-prod ps shell prod-up prod-down worker worker-stop console m me mc mf
 
 # Variables
 DOCKER := docker compose
@@ -8,60 +8,60 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 install: ## Install dependencies
-	composer install
+	$(DOCKER) exec $(PHP_CONTAINER) composer install
 
 update: ## Update dependencies
-	composer update
+	$(DOCKER) exec $(PHP_CONTAINER) composer update
 
 clean: ## Clean cache and logs
-	rm -rf var/cache/*
-	rm -rf var/log/*
+	$(DOCKER) exec $(PHP_CONTAINER) rm -rf var/cache/*
+	$(DOCKER) exec $(PHP_CONTAINER) rm -rf var/log/*
 
-cache: ## Clear cache (in container)
+cache: ## Clear cache
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console cache:clear
 
 assets: ## Install assets
-	php bin/console assets:install --symlink
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console assets:install --symlink
 
 test: ## Run tests
-	php bin/phpunit
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/phpunit
 
 check: ## Run all checks (stan, cs, rector, test)
 	@echo "\033[33m▶ Running PHPStan...\033[0m"
-	@php vendor/bin/phpstan analyse
+	@$(DOCKER) exec -T $(PHP_CONTAINER) php vendor/bin/phpstan analyse
 	@echo "\033[33m▶ Running PHP-CS-Fixer...\033[0m"
-	@php vendor/bin/php-cs-fixer fix --dry-run --diff
+	@$(DOCKER) exec -T $(PHP_CONTAINER) php vendor/bin/php-cs-fixer fix --dry-run --diff
 	@echo "\033[33m▶ Running Rector...\033[0m"
-	@php vendor/bin/rector process --dry-run
+	@$(DOCKER) exec -T $(PHP_CONTAINER) php vendor/bin/rector process --dry-run
 	@echo "\033[33m▶ Running PHPUnit...\033[0m"
-	@php bin/phpunit
+	@$(DOCKER) exec -T $(PHP_CONTAINER) php bin/phpunit
 	@echo "\033[32m✓ All checks passed!\033[0m"
 
 stan: ## Run PHPStan
-	php vendor/bin/phpstan analyse
+	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/phpstan analyse
 
 stan-fix: ## Generate PHPStan baseline
-	php vendor/bin/phpstan analyse --generate-baseline
+	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/phpstan analyse --generate-baseline
 
 cs: ## Check code style (dry-run)
-	php vendor/bin/php-cs-fixer fix --dry-run --diff
+	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/php-cs-fixer fix --dry-run --diff
 
 cs-fix: ## Fix code style
-	php vendor/bin/php-cs-fixer fix
+	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/php-cs-fixer fix
 
 rector: ## Check code with Rector (dry-run)
-	php vendor/bin/rector process --dry-run
+	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/rector process --dry-run
 
 rector-fix: ## Fix code with Rector
-	php vendor/bin/rector process
+	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/rector process
 
-# Database (in container)
+# Database
 db: ## Create database and run migrations
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:database:create --if-not-exists
-	@$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:migrations:migrate --no-interaction 2>/dev/null || true
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:migrations:migrate --no-interaction
 
 migrate: ## Run migrations
-	@$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:migrations:migrate --no-interaction 2>/dev/null || true
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:migrations:migrate --no-interaction
 
 make-migration: ## Create new migration
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console make:migration
@@ -69,7 +69,7 @@ make-migration: ## Create new migration
 db-reset: ## Reset database (drop, create, migrate)
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:database:drop --force --if-exists
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:database:create --if-not-exists
-	@$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:migrations:migrate --no-interaction 2>/dev/null || true
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console doctrine:migrations:migrate --no-interaction
 
 # Docker
 up: ## Start containers (dev)
@@ -99,13 +99,25 @@ prod-up: ## Start production containers
 prod-down: ## Stop production containers
 	$(DOCKER) -f compose.yaml -f compose.prod.yaml down
 
-# Messenger (in container)
+# Messenger
 worker: ## Consume messages
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console messenger:consume async
 
 worker-stop: ## Stop all workers
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console messenger:stop-workers
 
-# Console
-console: ## Run Symfony console (args: c="command")
-	$(DOCKER) exec $(PHP_CONTAINER) php bin/console $(c)
+# Shortcuts
+console: ## Run console command (make console args="cache:clear")
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console $(args)
+
+m: ## make:command/make:controller/etc (make m args="controller")
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console make:$(args)
+
+me: ## make:entity (make me args="User")
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console make:entity $(args)
+
+mc: ## make:controller (make mc args="HomeController")
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console make:controller $(args)
+
+mf: ## make:form (make mf args="UserType")
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console make:form $(args)
