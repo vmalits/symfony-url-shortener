@@ -1,0 +1,5 @@
+# Production environment override
+services:
+  php:
+    environment:
+      APP_SECRET: ${APP_SECRET}
