@@ -10,8 +10,13 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[{compose.yaml,compose.*.yaml}]
+[{compose.yaml,compose.*.yaml,.github/**/*.yaml}]
 indent_size = 2
+
+[**/{Dockerfile,Caddyfile,*.sh}]
+indent_style = tab
 
 [*.md]
 trim_trailing_whitespace = false
+indent_size = unset
+indent_style = unset
