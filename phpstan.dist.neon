@@ -3,6 +3,8 @@ parameters:
     paths:
         - src
         - tests
+    ignoreErrors:
+        - '#Property .*::\$id .* never assigned#'
 
     excludePaths:
         - tests/bootstrap.php
