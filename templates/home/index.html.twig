@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shorten — Beautiful URL Shortener{% endblock %}
+
+{# Tailwind CSS is loaded via base.html.twig using AssetMapper #}
+
+{% block body %}
+<div class="min-h-screen bg-slate-50 font-sans antialiased text-slate-900">
+    <!-- Navbar -->
+    <nav class="h-24 flex items-center justify-between px-10 max-w-7xl mx-auto">
+        <a href="/" class="flex items-center space-x-2">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl italic shadow-lg shadow-indigo-100">S</div>
+            <span class="font-bold text-2xl tracking-tight uppercase">Shorten</span>
+        </a>
+        
+        <div class="flex items-center space-x-8">
+            <a href="/login" class="font-bold text-slate-600 hover:text-slate-900 transition-colors text-sm">Sign In</a>
+            <a href="/register" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-indigo-100 transition-all text-sm active:scale-95">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="max-w-7xl mx-auto px-10 pt-24 pb-32 flex flex-col items-center text-center">
+        <div class="inline-flex items-center px-4 py-2 bg-indigo-50 rounded-full text-indigo-700 text-sm font-bold mb-8 animate-bounce">
+            <span class="mr-2">✨</span> 1.2M links shortened this month
+        </div>
+        
+        <h1 class="text-7xl font-extrabold tracking-tight mb-8 max-w-3xl leading-[1.1]">
+            Powerful links that <span class="text-indigo-600">work harder</span> for you.
+        </h1>
+        
+        <p class="text-slate-500 text-xl max-w-2xl mb-12">
+            The world's most elegant URL shortener for creators, brands, and marketers. Shorten, track, and optimize with ease.
+        </p>
+
+        <div class="w-full max-w-2xl bg-white p-4 rounded-3xl shadow-xl border border-slate-100 flex flex-col sm:flex-row gap-4">
+            <input type="url" placeholder="Paste your long URL here..." 
+                   class="flex-1 bg-slate-50 border-none rounded-2xl px-6 py-4 text-lg focus:ring-4 focus:ring-indigo-50 focus:bg-white transition-all outline-none">
+            <a href="/register" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-indigo-100 transition-all active:scale-95 flex items-center justify-center">
+                Shorten Free
+            </a>
+        </div>
+        
+        <p class="mt-6 text-slate-400 text-sm">
+            No credit card required. Cancel anytime.
+        </p>
+    </div>
+
+    <!-- Trust Section -->
+    <div class="bg-white py-24 border-y border-slate-100">
+        <div class="max-w-7xl mx-auto px-10 grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
+            <div class="space-y-4">
+                <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold">Ultra Fast</h3>
+                <p class="text-slate-500">Redirects happen in under 100ms globally.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold">Deep Analytics</h3>
+                <p class="text-slate-500">Know exactly where your audience is coming from.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold">Enterprise Secure</h3>
+                <p class="text-slate-500">End-to-end encryption for every single link.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-20 max-w-7xl mx-auto px-10 flex flex-col md:flex-row justify-between items-center text-slate-400 text-sm">
+        <p>&copy; 2026 Shorten. Crafted with care by opencode.</p>
+        <div class="flex space-x-8 mt-6 md:mt-0 font-bold">
+            <a href="#" class="hover:text-slate-900 transition-colors">Privacy</a>
+            <a href="#" class="hover:text-slate-900 transition-colors">Terms</a>
+            <a href="#" class="hover:text-slate-900 transition-colors">Twitter</a>
+        </div>
+    </footer>
+</div>
+{% endblock %}

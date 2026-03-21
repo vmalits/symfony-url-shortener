@@ -1,20 +1,196 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout/app.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block header_title %}Overview{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <!-- Hero Section -->
+    <div class="mb-12">
+        <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Shorten your links.</h2>
+        <p class="text-slate-500 text-lg">Instant URL shortening with advanced analytics.</p>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <!-- URL Input Box -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-12 transform transition-all hover:shadow-md">
+        <form action="#" method="POST" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1 relative group">
+                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600 text-slate-400">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13.5V15a2 2 0 01-2 2H5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9h1a2 2 0 012 2v1.5M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101" />
+                    </svg>
+                </div>
+                <input type="url" required name="url" placeholder="https://very-long-url.com/something-really-long-here" 
+                       class="w-full bg-slate-50 border-transparent rounded-2xl py-5 pl-16 pr-6 text-lg text-slate-900 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
+            </div>
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-10 py-5 rounded-2xl shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                Shorten Now
+            </button>
+        </form>
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/app/src/Controller/DashboardController.php</code></li>
-        <li>Your template at <code>/app/templates/dashboard/index.html.twig</code></li>
-    </ul>
-</div>
+    <!-- Recent Links Section -->
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-slate-900 tracking-tight">Recent Links</h3>
+            <button class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View All Links</button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <!-- Example Link Card 1 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between group hover:border-indigo-200 transition-all shadow-sm hover:shadow-md">
+                <div class="flex items-center space-x-6">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-slate-900 font-bold text-lg mb-1 group-hover:text-indigo-600 transition-colors">shrt.ly/xK9f2z</p>
+                        <p class="text-slate-400 text-sm truncate max-w-xs md:max-w-md">https://github.com/symfony/symfony-url-shortener-example</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                    <div class="px-4 py-2 bg-slate-50 rounded-lg text-slate-600 font-bold text-sm">
+                        <span class="text-slate-900 mr-1">1,248</span> clicks
+                    </div>
+                    <button class="p-3 bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-all" title="Copy Link">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                    <button class="p-3 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-all" title="Delete">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Example Link Card 2 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between group hover:border-indigo-200 transition-all shadow-sm hover:shadow-md">
+                <div class="flex items-center space-x-6">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-slate-900 font-bold text-lg mb-1 group-hover:text-indigo-600 transition-colors">shrt.ly/mB3kL9</p>
+                        <p class="text-slate-400 text-sm truncate max-w-xs md:max-w-md">https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                    <div class="px-4 py-2 bg-slate-50 rounded-lg text-slate-600 font-bold text-sm">
+                        <span class="text-slate-900 mr-1">8,421</span> clicks
+                    </div>
+                    <button class="p-3 bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-all" title="Copy Link">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                    <button class="p-3 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-all" title="Delete">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Example Link Card 3 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between group hover:border-indigo-200 transition-all shadow-sm hover:shadow-md">
+                <div class="flex items-center space-x-6">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-slate-900 font-bold text-lg mb-1 group-hover:text-indigo-600 transition-colors">shrt.ly/pQ7nR2</p>
+                        <p class="text-slate-400 text-sm truncate max-w-xs md:max-w-md">https://tailwindcss.com/docs/installation</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                    <div class="px-4 py-2 bg-slate-50 rounded-lg text-slate-600 font-bold text-sm">
+                        <span class="text-slate-900 mr-1">543</span> clicks
+                    </div>
+                    <button class="p-3 bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-all" title="Copy Link">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                    <button class="p-3 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-all" title="Delete">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Example Link Card 4 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between group hover:border-indigo-200 transition-all shadow-sm hover:shadow-md">
+                <div class="flex items-center space-x-6">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-slate-900 font-bold text-lg mb-1 group-hover:text-indigo-600 transition-colors">shrt.ly/wT4vX8</p>
+                        <p class="text-slate-400 text-sm truncate max-w-xs md:max-w-md">https://symfony.com/doc/current/setup.html</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                    <div class="px-4 py-2 bg-slate-50 rounded-lg text-slate-600 font-bold text-sm">
+                        <span class="text-slate-900 mr-1">892</span> clicks
+                    </div>
+                    <button class="p-3 bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-all" title="Copy Link">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                    <button class="p-3 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-all" title="Delete">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Example Link Card 5 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between group hover:border-indigo-200 transition-all shadow-sm hover:shadow-md">
+                <div class="flex items-center space-x-6">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-slate-900 font-bold text-lg mb-1 group-hover:text-indigo-600 transition-colors">shrt.ly/jH2cY5</p>
+                        <p class="text-slate-400 text-sm truncate max-w-xs md:max-w-md">https://www.php.net/manual/en/language.oop5.php</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                    <div class="px-4 py-2 bg-slate-50 rounded-lg text-slate-600 font-bold text-sm">
+                        <span class="text-slate-900 mr-1">156</span> clicks
+                    </div>
+                    <button class="p-3 bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-xl transition-all" title="Copy Link">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                    <button class="p-3 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-all" title="Delete">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

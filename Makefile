@@ -28,7 +28,7 @@ test: ## Run tests
 
 check: ## Run all checks (stan, cs, rector, test)
 	@echo "\033[33m▶ Running PHPStan...\033[0m"
-	@$(DOCKER) exec -T $(PHP_CONTAINER) php vendor/bin/phpstan analyse
+	@$(DOCKER) exec -T $(PHP_CONTAINER) php -d memory_limit=512M vendor/bin/phpstan analyse
 	@echo "\033[33m▶ Running PHP-CS-Fixer...\033[0m"
 	@$(DOCKER) exec -T $(PHP_CONTAINER) php vendor/bin/php-cs-fixer fix --dry-run --diff
 	@echo "\033[33m▶ Running Rector...\033[0m"
@@ -38,7 +38,7 @@ check: ## Run all checks (stan, cs, rector, test)
 	@echo "\033[32m✓ All checks passed!\033[0m"
 
 stan: ## Run PHPStan
-	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/phpstan analyse
+	$(DOCKER) exec $(PHP_CONTAINER) php -d memory_limit=512M vendor/bin/phpstan analyse
 
 stan-fix: ## Generate PHPStan baseline
 	$(DOCKER) exec $(PHP_CONTAINER) php vendor/bin/phpstan analyse --generate-baseline
