@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Click;
 use App\Entity\ShortUrl;
 use App\Entity\User;
 use App\Repository\ShortUrlRepository;
@@ -96,13 +97,22 @@ final class ShortUrlController extends AbstractController
     }
 
     #[Route('/{code}', name: 'app_redirect', methods: ['GET'], priority: -1)]
-    public function redirect_to_url(string $code, ShortUrlRepository $repository): Response
+    public function redirect_to_url(string $code, ShortUrlRepository $repository, Request $request): Response
     {
         $shortUrl = $repository->findOneBy(['code' => $code]);
 
         if (!$shortUrl) {
             throw $this->createNotFoundException('Short URL not found');
         }
+
+        $click = new Click();
+        $click->setShortUrl($shortUrl);
+        $click->setIp($request->getClientIp() ?? 'unknown');
+        $click->setUserAgent($request->headers->get('User-Agent'));
+        $click->setCreatedAt(new \DateTimeImmutable());
+
+        $this->em->persist($click);
+        $this->em->flush();
 
         return new RedirectResponse($shortUrl->getOriginalUrl(), Response::HTTP_FOUND);
     }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\ShortUrlRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ShortUrlRepository::class)]
@@ -28,9 +30,16 @@ class ShortUrl
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
+    /**
+     * @var Collection<int, Click>
+     */
+    #[ORM\OneToMany(targetEntity: Click::class, mappedBy: 'shortUrl', orphanRemoval: true)]
+    private Collection $clicks;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->clicks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,5 +93,13 @@ class ShortUrl
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Click>
+     */
+    public function getClicks(): Collection
+    {
+        return $this->clicks;
     }
 }
