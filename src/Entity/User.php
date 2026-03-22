@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -39,9 +41,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column()]
     private \DateTimeImmutable $createdAt;
 
+    /**
+     * @var Collection<int, ShortUrl>
+     */
+    #[ORM\OneToMany(targetEntity: ShortUrl::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $shortUrls;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->shortUrls = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,5 +136,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data["\0".self::class."\0password"] = null !== $this->password ? hash('crc32c', $this->password) : null;
 
         return $data;
+    }
+
+    /**
+     * @return Collection<int, ShortUrl>
+     */
+    public function getShortUrls(): Collection
+    {
+        return $this->shortUrls;
+    }
+
+    public function addShortUrl(ShortUrl $shortUrl): static
+    {
+        if (!$this->shortUrls->contains($shortUrl)) {
+            $this->shortUrls->add($shortUrl);
+            $shortUrl->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShortUrl(ShortUrl $shortUrl): static
+    {
+        $this->shortUrls->removeElement($shortUrl);
+
+        return $this;
     }
 }
