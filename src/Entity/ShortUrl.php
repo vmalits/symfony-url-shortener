@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ShortUrlRepository::class)]
+#[ORM\Table(name: 'short_urls')]
 class ShortUrl
 {
     #[ORM\Id]

@@ -8,6 +8,7 @@ use App\Repository\ClickRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClickRepository::class)]
+#[ORM\Table(name: 'clicks')]
 class Click
 {
     #[ORM\Id]
@@ -16,7 +17,7 @@ class Click
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'clicks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'short_urls_id', nullable: false)]
     private ?ShortUrl $shortUrl = null;
 
     #[ORM\Column(length: 45)]
