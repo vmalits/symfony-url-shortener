@@ -10,6 +10,7 @@ use App\Repository\ClickRepository;
 use App\Repository\ShortUrlRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -51,6 +52,10 @@ final class ShortUrlControllerTest extends WebTestCase
             $this->em->remove($click);
         }
         $this->em->flush();
+
+        /** @var CacheItemPoolInterface $cache */
+        $cache = $container->get(CacheItemPoolInterface::class);
+        $cache->clear();
 
         /** @var UserPasswordHasherInterface $passwordHasher */
         $passwordHasher = $container->get(UserPasswordHasherInterface::class);

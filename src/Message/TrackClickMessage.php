@@ -7,7 +7,7 @@ namespace App\Message;
 final class TrackClickMessage
 {
     public function __construct(
-        public int $shortUrlId,
+        public string $code,
         public string $ip,
         public ?string $userAgent,
     ) {
