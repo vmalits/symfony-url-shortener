@@ -106,19 +106,24 @@ final class ShortUrlController extends AbstractController
 
     #[Route('/links/{id}/delete', name: 'app_links_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_USER')]
-    public function delete(int $id, Request $request): Response
+    public function delete(ShortUrl $shortUrl, Request $request): Response
     {
-        $shortUrl = $this->em->getRepository(ShortUrl::class)->find($id);
+        if (
+            !$this->isCsrfTokenValid('delete_link_'.$shortUrl->getId(), $request->request->getString('_token'))
+        ) {
+            $this->addFlash('error', 'Invalid CSRF token.');
 
-        if (!$shortUrl) {
-            throw $this->createNotFoundException('Short URL not found');
+            return $this->redirectToRoute('app_dashboard');
         }
 
         $this->denyAccessUnlessGranted(ShortUrlVoter::DELETE, $shortUrl);
+
+        $this->cache->delete('short_url_'.$shortUrl->getCode());
+
         $this->em->remove($shortUrl);
         $this->em->flush();
 
-        $this->addFlash('success', 'Link deleted successfully!');
+        $this->addFlash('success', 'Link deleted.');
 
         return $this->redirectToRoute('app_dashboard');
     }
@@ -129,16 +134,16 @@ final class ShortUrlController extends AbstractController
         ShortUrlRepository $repository,
         Request $request,
     ): Response {
-        $shortUrl = $this->cache->get('short_url_'.$code, function (ItemInterface $item) use ($repository, $code) {
+        $originalUrl = $this->cache->get('short_url_'.$code, function (ItemInterface $item) use ($repository, $code) {
             $item->expiresAfter(3600);
 
             $shortUrl = $repository->findOneBy(['code' => $code]);
 
-            if (!$shortUrl || !$shortUrl->getId()) {
+            if (!$shortUrl) {
                 throw $this->createNotFoundException('Short URL not found');
             }
 
-            return $shortUrl;
+            return $shortUrl->getOriginalUrl();
         });
 
         $this->bus->dispatch(new TrackClickMessage(
@@ -147,6 +152,6 @@ final class ShortUrlController extends AbstractController
             $request->headers->get('User-Agent'),
         ));
 
-        return new RedirectResponse($shortUrl->getOriginalUrl(), Response::HTTP_FOUND);
+        return new RedirectResponse($originalUrl, Response::HTTP_FOUND);
     }
 }
