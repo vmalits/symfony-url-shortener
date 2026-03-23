@@ -6,7 +6,6 @@ namespace App\Tests;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -22,8 +21,8 @@ class RegistrationControllerTest extends WebTestCase
         // Ensure we have a clean database
         $container = static::getContainer();
 
+        /** @var EntityManagerInterface $em */
         $em = $container->get(EntityManagerInterface::class);
-        \assert($em instanceof EntityManagerInterface);
 
         /** @var UserRepository $userRepository */
         $userRepository = $container->get(UserRepository::class);

@@ -8,3 +8,4 @@ parameters:
 
     excludePaths:
         - tests/bootstrap.php
+    reportUnmatchedIgnoredErrors: false

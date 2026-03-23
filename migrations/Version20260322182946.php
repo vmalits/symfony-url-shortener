@@ -11,7 +11,7 @@ final class Version20260322182946 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add foreign key from clicks to short_urls';
     }
 
     public function up(Schema $schema): void

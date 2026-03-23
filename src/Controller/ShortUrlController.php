@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Click;
 use App\Entity\ShortUrl;
 use App\Entity\User;
+use App\Message\TrackClickMessage;
 use App\Repository\ShortUrlRepository;
 use App\Security\ShortUrlVoter;
 use App\Service\ShortCodeGenerator;
@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -97,22 +98,23 @@ final class ShortUrlController extends AbstractController
     }
 
     #[Route('/{code}', name: 'app_redirect', methods: ['GET'], priority: -1)]
-    public function redirect_to_url(string $code, ShortUrlRepository $repository, Request $request): Response
-    {
+    public function redirectToUrl(
+        string $code,
+        ShortUrlRepository $repository,
+        Request $request,
+        MessageBusInterface $bus,
+    ): Response {
         $shortUrl = $repository->findOneBy(['code' => $code]);
 
-        if (!$shortUrl) {
+        if (!$shortUrl || !$shortUrl->getId()) {
             throw $this->createNotFoundException('Short URL not found');
         }
 
-        $click = new Click();
-        $click->setShortUrl($shortUrl);
-        $click->setIp($request->getClientIp() ?? 'unknown');
-        $click->setUserAgent($request->headers->get('User-Agent'));
-        $click->setCreatedAt(new \DateTimeImmutable());
-
-        $this->em->persist($click);
-        $this->em->flush();
+        $bus->dispatch(new TrackClickMessage(
+            $shortUrl->getId(),
+            $request->getClientIp() ?? 'unknown',
+            $request->headers->get('User-Agent'),
+        ));
 
         return new RedirectResponse($shortUrl->getOriginalUrl(), Response::HTTP_FOUND);
     }

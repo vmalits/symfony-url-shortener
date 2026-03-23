@@ -6,6 +6,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\ShortUrl;
 use App\Entity\User;
+use App\Repository\ClickRepository;
 use App\Repository\ShortUrlRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,6 +45,13 @@ final class ShortUrlControllerTest extends WebTestCase
         }
         $this->em->flush();
 
+        /** @var ClickRepository $clickRepository */
+        $clickRepository = $container->get(ClickRepository::class);
+        foreach ($clickRepository->findAll() as $click) {
+            $this->em->remove($click);
+        }
+        $this->em->flush();
+
         /** @var UserPasswordHasherInterface $passwordHasher */
         $passwordHasher = $container->get(UserPasswordHasherInterface::class);
 
@@ -72,7 +80,6 @@ final class ShortUrlControllerTest extends WebTestCase
     {
         $this->client->loginUser($this->user);
 
-        // Get CSRF token from the dashboard page
         $crawler = $this->client->request('GET', $this->urlGenerator->generate('app_dashboard'));
         $token = $crawler->filter('input[name="_token"]')->attr('value');
 
@@ -95,7 +102,6 @@ final class ShortUrlControllerTest extends WebTestCase
 
         $this->client->loginUser($this->user);
 
-        // Get CSRF token from the dashboard page
         $crawler = $this->client->request('GET', $this->urlGenerator->generate('app_dashboard'));
         $token = $crawler->filter('form[action*="'.$shortUrl->getId().'"] input[name="_token"]')
             ->attr('value');
@@ -106,5 +112,19 @@ final class ShortUrlControllerTest extends WebTestCase
             ]);
 
         self::assertResponseRedirects($this->urlGenerator->generate('app_dashboard'));
+    }
+
+    public function testRedirectDispatchesMessage(): void
+    {
+        $shortUrl = new ShortUrl();
+        $shortUrl->setOriginalUrl('https://example.com/redirect');
+        $shortUrl->setCode('rdct1');
+        $shortUrl->setUser($this->user);
+        $this->em->persist($shortUrl);
+        $this->em->flush();
+
+        $this->client->request('GET', '/rdct1');
+
+        self::assertResponseRedirects('https://example.com/redirect');
     }
 }
