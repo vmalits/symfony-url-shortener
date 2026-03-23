@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\ShortUrl;
 use App\Entity\User;
 use App\Message\TrackClickMessage;
+use App\Repository\ClickRepository;
 use App\Repository\ShortUrlRepository;
 use App\Security\ShortUrlVoter;
 use App\Service\ShortCodeGenerator;
@@ -44,7 +45,7 @@ final class ShortUrlController extends AbstractController
 
     #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    public function index(): Response
+    public function index(ClickRepository $clickRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -53,6 +54,7 @@ final class ShortUrlController extends AbstractController
 
         return $this->render('dashboard/index.html.twig', [
             'shortUrls' => $shortUrls,
+            'clickCounts' => $clickRepository->countGroupedByShortUrl($shortUrls),
         ]);
     }
 

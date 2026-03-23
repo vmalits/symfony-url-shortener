@@ -32,8 +32,8 @@ final class TrackClickMessageHandlerTest extends TestCase
 
         $this->shortUrlRepository
             ->expects($this->once())
-            ->method('find')
-            ->with('testcode')
+            ->method('findOneBy')
+            ->with(['code' => 'testcode'])
             ->willReturn($shortUrl);
 
         $this->em
@@ -57,8 +57,8 @@ final class TrackClickMessageHandlerTest extends TestCase
     {
         $this->shortUrlRepository
             ->expects($this->once())
-            ->method('find')
-            ->with('nonexistent')
+            ->method('findOneBy')
+            ->with(['code' => 'nonexistent'])
             ->willReturn(null);
 
         $this->em

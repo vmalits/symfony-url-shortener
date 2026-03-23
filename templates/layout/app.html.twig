@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Dashboard{% endblock %}</title>
     <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    {{ importmap('app') }}
     <style>
         /* Custom Scrollbar */
         .custom-scroll::-webkit-scrollbar {
@@ -96,5 +97,6 @@
 
 </div>
 
+<script type="module">import 'app';</script>
 </body>
 </html>

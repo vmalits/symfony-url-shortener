@@ -25,4 +25,16 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'chart.js' => [
+        'version' => '4.5.1',
+    ],
+    '@symfony/ux-live-component' => [
+        'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
+    ],
+    '@symfony/ux-chartjs' => [
+        'version' => '2.34.0',
+    ],
+    '@kurkle/color' => [
+        'version' => '0.3.4',
+    ],
 ];

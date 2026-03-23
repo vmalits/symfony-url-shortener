@@ -8,7 +8,9 @@ use App\Entity\Click;
 use App\Message\TrackClickMessage;
 use App\Repository\ShortUrlRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 final readonly class TrackClickMessageHandler
 {
     public function __construct(
@@ -19,7 +21,7 @@ final readonly class TrackClickMessageHandler
 
     public function __invoke(TrackClickMessage $message): void
     {
-        $shortUrl = $this->shortUrlRepository->find($message->code);
+        $shortUrl = $this->shortUrlRepository->findOneBy(['code' => $message->code]);
 
         if (!$shortUrl) {
             return;

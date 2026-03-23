@@ -33,7 +33,7 @@
     {% endfor %}
 
     <!-- URL Input Box -->
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-12 transform transition-all hover:shadow-md">
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-8 transform transition-all hover:shadow-md">
         <form action="{{ path('app_links_create') }}" method="POST" class="flex flex-col md:flex-row gap-4">
             <input type="hidden" name="_token" value="{{ csrf_token('create_link') }}">
             <div class="flex-1 relative group">
@@ -53,8 +53,11 @@
         </form>
     </div>
 
+    <!-- Click Analytics Chart -->
+    {{ component('click_chart') }}
+
     <!-- Recent Links Section -->
-    <div class="space-y-6">
+    <div class="space-y-6 mt-8">
         <div class="flex items-center justify-between">
             <h3 class="text-xl font-bold text-slate-900 tracking-tight">Recent Links</h3>
             {% if shortUrls|length > 0 %}

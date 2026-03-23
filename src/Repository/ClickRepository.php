@@ -47,4 +47,30 @@ class ClickRepository extends ServiceEntityRepository
 
         return $counts;
     }
+
+    /**
+     * @return array<string, int>
+     */
+    public function countByDay(int $days = 7): array
+    {
+        $startDate = new \DateTimeImmutable('-'.$days.' days');
+
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT DATE(created_at) AS date, COUNT(*) AS count
+            FROM clicks
+            WHERE created_at >= :startDate
+            GROUP BY DATE(created_at)
+            ORDER BY date ASC
+        ';
+
+        $result = $conn->executeQuery($sql, ['startDate' => $startDate->format('Y-m-d H:i:s')]);
+
+        $byDay = [];
+        foreach ($result->fetchAllAssociative() as $row) {
+            $byDay[$row['date']] = (int) $row['count'];
+        }
+
+        return $byDay;
+    }
 }
