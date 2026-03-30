@@ -1,4 +1,4 @@
-.PHONY: help install update clean cache assets check test stan stan-fix cs cs-fix rector rector-fix db db-reset migrate make-migration up down logs build build-prod ps shell prod-up prod-down worker worker-stop console m me mc mf
+.PHONY: help install update clean cache assets check test stan stan-fix cs cs-fix rector rector-fix db db-reset migrate make-migration up down logs build build-prod ps shell prod-up prod-down worker worker-stop console m me mc mf geoip tw
 
 # Variables
 DOCKER := docker compose
@@ -121,3 +121,17 @@ mc: ## make:controller (make mc args="HomeController")
 
 mf: ## make:form (make mf args="UserType")
 	$(DOCKER) exec $(PHP_CONTAINER) php bin/console make:form $(args)
+
+GEOIP_DIR := var/geoip
+GEOIP_DB := $(GEOIP_DIR)/GeoLite2-Country.mmdb
+
+geoip: ## Download GeoLite2 Country database
+	@mkdir -p $(GEOIP_DIR)
+	@if [ -f $(GEOIP_DB) ]; then \
+		echo "\033[33mGeoLite2 database already exists. Use make geoip-force to re-download.\033[0m"; \
+	else \
+		$(MAKE) geoip-force; \
+	fi
+
+tw: ## Build Tailwind CSS
+	$(DOCKER) exec $(PHP_CONTAINER) php bin/console tailwind:build

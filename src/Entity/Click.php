@@ -26,6 +26,12 @@ class Click
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $userAgent = null;
 
+    #[ORM\Column(length: 2, nullable: true)]
+    private ?string $country = null;
+
+    #[ORM\Column(length: 2048, nullable: true)]
+    private ?string $referrer = null;
+
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -78,6 +84,30 @@ class Click
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getReferrer(): ?string
+    {
+        return $this->referrer;
+    }
+
+    public function setReferrer(?string $referrer): static
+    {
+        $this->referrer = $referrer;
 
         return $this;
     }

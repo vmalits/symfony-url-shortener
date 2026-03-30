@@ -10,6 +10,7 @@ final class TrackClickMessage
         public string $code,
         public string $ip,
         public ?string $userAgent,
+        public ?string $referrer,
     ) {
     }
 }

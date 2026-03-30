@@ -7,6 +7,7 @@ namespace App\MessageHandler;
 use App\Entity\Click;
 use App\Message\TrackClickMessage;
 use App\Repository\ShortUrlRepository;
+use App\Service\GeoIpInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -16,6 +17,7 @@ final readonly class TrackClickMessageHandler
     public function __construct(
         private ShortUrlRepository $shortUrlRepository,
         private EntityManagerInterface $em,
+        private GeoIpInterface $geoIpService,
     ) {
     }
 
@@ -31,6 +33,8 @@ final readonly class TrackClickMessageHandler
         $click->setShortUrl($shortUrl);
         $click->setIp($message->ip);
         $click->setUserAgent($message->userAgent);
+        $click->setReferrer($message->referrer);
+        $click->setCountry($this->geoIpService->getCountryCode($message->ip));
         $click->setCreatedAt(new \DateTimeImmutable());
 
         $this->em->persist($click);
