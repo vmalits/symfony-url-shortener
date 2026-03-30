@@ -25,10 +25,14 @@ final class DashboardController extends AbstractController
     {
         $shortUrls = $this->shortUrlRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'DESC']);
         $clickCounts = $this->clickRepository->countGroupedByShortUrl($shortUrls);
+        $analytics = $this->clickRepository->getAggregatedAnalytics($shortUrls);
 
         return $this->render('dashboard/index.html.twig', [
             'shortUrls' => $shortUrls,
             'clickCounts' => $clickCounts,
+            'countries' => $analytics['countries'],
+            'referrers' => $analytics['referrers'],
+            'devices' => $analytics['devices'],
         ]);
     }
 }
