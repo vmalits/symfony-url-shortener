@@ -57,14 +57,14 @@ final class ShortUrlControllerTest extends WebTestCase
         $cache = $container->get(CacheItemPoolInterface::class);
         $cache->clear();
 
-        /** @var UserPasswordHasherInterface $passwordHasher */
-        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
-
-        $this->user = new User();
-        $this->user->setEmail('shorturl@test.com');
-        $this->user->setPassword($passwordHasher->hashPassword($this->user, 'password'));
-        $this->em->persist($this->user);
+        $user = new User();
+        $user->setEmail('test@example.com');
+        /** @var UserPasswordHasherInterface $hasher */
+        $hasher = $container->get(UserPasswordHasherInterface::class);
+        $user->setPassword($hasher->hashPassword($user, 'password'));
+        $this->em->persist($user);
         $this->em->flush();
+        $this->user = $user;
 
         /** @var UrlGeneratorInterface $urlGenerator */
         $urlGenerator = $container->get(UrlGeneratorInterface::class);
@@ -73,10 +73,7 @@ final class ShortUrlControllerTest extends WebTestCase
 
     public function testCreateRequiresAuthentication(): void
     {
-        $this->client->request('POST', $this->urlGenerator->generate('app_links_create'), [
-            'originalUrl' => 'https://example.com',
-            '_token' => 'test',
-        ]);
+        $this->client->request('POST', $this->urlGenerator->generate('app_links_create'));
 
         self::assertResponseRedirects($this->urlGenerator->generate('app_login'));
     }
@@ -84,39 +81,35 @@ final class ShortUrlControllerTest extends WebTestCase
     public function testCreateShortUrl(): void
     {
         $this->client->loginUser($this->user);
-
-        $crawler = $this->client->request('GET', $this->urlGenerator->generate('app_dashboard'));
-        $token = $crawler->filter('input[name="_token"]')->attr('value');
+        $crawler = $this->client->request('GET', $this->urlGenerator->generate('app_links'));
 
         $this->client->request('POST', $this->urlGenerator->generate('app_links_create'), [
             'originalUrl' => 'https://example.com',
-            '_token' => $token,
+            '_token' => $crawler->filter('input[name="_token"]')->first()->attr('value'),
         ]);
 
-        self::assertResponseRedirects($this->urlGenerator->generate('app_dashboard'));
+        self::assertResponseRedirects($this->urlGenerator->generate('app_links'));
     }
 
     public function testDeleteShortUrl(): void
     {
+        $this->client->loginUser($this->user);
+
         $shortUrl = new ShortUrl();
-        $shortUrl->setOriginalUrl('https://example.com');
-        $shortUrl->setCode('testcode');
+        $shortUrl->setOriginalUrl('https://example.com/delete');
+        $shortUrl->setCode('del01');
         $shortUrl->setUser($this->user);
         $this->em->persist($shortUrl);
         $this->em->flush();
 
-        $this->client->loginUser($this->user);
+        $crawler = $this->client->request('GET', $this->urlGenerator->generate('app_links'));
+        $token = $crawler->filter('input[name="_token"]')->last()->attr('value');
 
-        $crawler = $this->client->request('GET', $this->urlGenerator->generate('app_dashboard'));
-        $token = $crawler->filter('form[action*="'.$shortUrl->getId().'"] input[name="_token"]')
-            ->attr('value');
+        $this->client->request('DELETE', $this->urlGenerator->generate('app_links_delete', ['id' => $shortUrl->getId()]), [
+            '_token' => $token,
+        ]);
 
-        $this->client->request('DELETE', $this->urlGenerator
-            ->generate('app_links_delete', ['id' => $shortUrl->getId()]), [
-                '_token' => $token,
-            ]);
-
-        self::assertResponseRedirects($this->urlGenerator->generate('app_dashboard'));
+        self::assertResponseRedirects($this->urlGenerator->generate('app_links'));
     }
 
     public function testRedirectDispatchesMessage(): void
