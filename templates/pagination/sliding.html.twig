@@ -1,0 +1,33 @@
+{%- if pageCount > 1 -%}
+<nav class="flex items-center justify-between mt-8" aria-label="Pagination">
+    <p class="text-sm text-slate-500">
+        Showing <span class="font-medium text-slate-900">{{ firstItemNumber }}</span> to <span class="font-medium text-slate-900">{{ lastItemNumber }}</span> of <span class="font-medium text-slate-900">{{ totalCount }}</span> results
+    </p>
+
+    <div class="flex items-center space-x-2">
+        {%- if first is defined -%}
+            <a href="{{ path(route, query|merge({(pageParameterName): first})) }}" class="px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">First</a>
+        {%- endif -%}
+
+        {%- if previous is defined -%}
+            <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Prev</a>
+        {%- endif -%}
+
+        {%- for page in pagesInRange -%}
+            {%- if page != current -%}
+                <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="px-3.5 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">{{ page }}</a>
+            {%- else -%}
+                <span class="px-3.5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-lg shadow-sm">{{ page }}</span>
+            {%- endif -%}
+        {%- endfor -%}
+
+        {%- if next is defined -%}
+            <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Next</a>
+        {%- endif -%}
+
+        {%- if last is defined -%}
+            <a href="{{ path(route, query|merge({(pageParameterName): last})) }}" class="px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Last</a>
+        {%- endif -%}
+    </div>
+</nav>
+{%- endif -%}
