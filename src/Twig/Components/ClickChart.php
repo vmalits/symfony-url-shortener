@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Components;
 
-use App\Repository\ClickRepository;
+use App\Domain\Click\Repository\ClickRepositoryInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -20,7 +20,7 @@ final class ClickChart
     public int $days = 7;
 
     public function __construct(
-        private readonly ClickRepository $clickRepository,
+        private readonly ClickRepositoryInterface $clickRepository,
         private readonly ChartBuilderInterface $chartBuilder,
     ) {
     }
