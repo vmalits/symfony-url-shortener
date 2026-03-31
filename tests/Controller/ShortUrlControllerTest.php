@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\ShortUrl;
-use App\Entity\User;
-use App\Repository\ClickRepository;
-use App\Repository\ShortUrlRepository;
-use App\Repository\UserRepository;
+use App\Domain\ShortUrl\Entity\ShortUrl;
+use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
+use App\Domain\ShortUrl\ValueObject\ShortCode;
+use App\Domain\ShortUrl\ValueObject\Url;
+use App\Domain\User\Entity\User;
+use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\ValueObject\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -32,24 +34,17 @@ final class ShortUrlControllerTest extends WebTestCase
         $em = $container->get(EntityManagerInterface::class);
         $this->em = $em;
 
-        /** @var UserRepository $userRepository */
-        $userRepository = $container->get(UserRepository::class);
+        /** @var UserRepositoryInterface $userRepository */
+        $userRepository = $container->get(UserRepositoryInterface::class);
         foreach ($userRepository->findAll() as $user) {
             $this->em->remove($user);
         }
         $this->em->flush();
 
-        /** @var ShortUrlRepository $shortUrlRepository */
-        $shortUrlRepository = $container->get(ShortUrlRepository::class);
+        /** @var ShortUrlRepositoryInterface $shortUrlRepository */
+        $shortUrlRepository = $container->get(ShortUrlRepositoryInterface::class);
         foreach ($shortUrlRepository->findAll() as $shortUrl) {
             $this->em->remove($shortUrl);
-        }
-        $this->em->flush();
-
-        /** @var ClickRepository $clickRepository */
-        $clickRepository = $container->get(ClickRepository::class);
-        foreach ($clickRepository->findAll() as $click) {
-            $this->em->remove($click);
         }
         $this->em->flush();
 
@@ -57,11 +52,13 @@ final class ShortUrlControllerTest extends WebTestCase
         $cache = $container->get(CacheItemPoolInterface::class);
         $cache->clear();
 
-        $user = new User();
-        $user->setEmail('test@example.com');
         /** @var UserPasswordHasherInterface $hasher */
         $hasher = $container->get(UserPasswordHasherInterface::class);
-        $user->setPassword($hasher->hashPassword($user, 'password'));
+        $email = new Email('test@example.com');
+        $user = User::create($email, $hasher->hashPassword(
+            User::create($email, ''),
+            'password',
+        ));
         $this->em->persist($user);
         $this->em->flush();
         $this->user = $user;
@@ -95,10 +92,11 @@ final class ShortUrlControllerTest extends WebTestCase
     {
         $this->client->loginUser($this->user);
 
-        $shortUrl = new ShortUrl();
-        $shortUrl->setOriginalUrl('https://example.com/delete');
-        $shortUrl->setCode('del01');
-        $shortUrl->setUser($this->user);
+        $shortUrl = ShortUrl::create(
+            new Url('https://example.com/delete'),
+            new ShortCode('del01test'),
+            $this->user,
+        );
         $this->em->persist($shortUrl);
         $this->em->flush();
 
@@ -114,14 +112,15 @@ final class ShortUrlControllerTest extends WebTestCase
 
     public function testRedirectDispatchesMessage(): void
     {
-        $shortUrl = new ShortUrl();
-        $shortUrl->setOriginalUrl('https://example.com/redirect');
-        $shortUrl->setCode('rdct1');
-        $shortUrl->setUser($this->user);
+        $shortUrl = ShortUrl::create(
+            new Url('https://example.com/redirect'),
+            new ShortCode('rdct1test'),
+            $this->user,
+        );
         $this->em->persist($shortUrl);
         $this->em->flush();
 
-        $this->client->request('GET', '/rdct1');
+        $this->client->request('GET', '/rdct1test');
 
         self::assertResponseRedirects('https://example.com/redirect');
     }

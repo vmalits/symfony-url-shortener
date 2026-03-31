@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace App\Tests\Controller;
 
-use App\Repository\UserRepository;
+use App\Domain\User\Entity\User;
+use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\ValueObject\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -12,32 +14,25 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class RegistrationControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
-    private UserRepository $userRepository;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-
-        // Ensure we have a clean database
         $container = static::getContainer();
 
         /** @var EntityManagerInterface $em */
         $em = $container->get(EntityManagerInterface::class);
 
-        /** @var UserRepository $userRepository */
-        $userRepository = $container->get(UserRepository::class);
-        $this->userRepository = $userRepository;
-
-        foreach ($this->userRepository->findAll() as $user) {
+        /** @var UserRepositoryInterface $userRepository */
+        $userRepository = $container->get(UserRepositoryInterface::class);
+        foreach ($userRepository->findAll() as $user) {
             $em->remove($user);
         }
-
         $em->flush();
     }
 
     public function testRegister(): void
     {
-        // Register a new user
         $this->client->request('GET', '/register');
         self::assertResponseIsSuccessful();
         self::assertPageTitleContains('Create an account');
@@ -48,8 +43,10 @@ class RegistrationControllerTest extends WebTestCase
             'registration_form[agreeTerms]' => true,
         ]);
 
-        // Ensure the response redirects after submitting the form, the user exists, and is not verified
-        // self::assertResponseRedirects('/'); @TODO: set the appropriate path that the user is redirected to.
-        self::assertCount(1, $this->userRepository->findAll());
+        $container = static::getContainer();
+        /** @var UserRepositoryInterface $userRepository */
+        $userRepository = $container->get(UserRepositoryInterface::class);
+
+        self::assertCount(1, $userRepository->findAll());
     }
 }

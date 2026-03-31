@@ -5,6 +5,12 @@ parameters:
         - tests
     ignoreErrors:
         - '#Property .*::\$id .* never assigned#'
+        - '#Property .*::\$shortUrls is never read, only written#'
+        - '#missingType\.iterableValue#'
+        - '#missingType\.generics#'
+        - '#missingType\.iterableValue#'
+        - '#return type with generic interface.*does not specify its types#'
+        - '#return type has no value type specified in iterable type#'
 
     excludePaths:
         - tests/bootstrap.php

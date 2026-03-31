@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Domain\User\Entity\User;
+use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\ValueObject\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -25,8 +26,8 @@ final class DashboardControllerTest extends WebTestCase
         $em = $container->get(EntityManagerInterface::class);
         $this->em = $em;
 
-        /** @var UserRepository $userRepository */
-        $userRepository = $container->get(UserRepository::class);
+        /** @var UserRepositoryInterface $userRepository */
+        $userRepository = $container->get(UserRepositoryInterface::class);
         foreach ($userRepository->findAll() as $user) {
             $this->em->remove($user);
         }
@@ -36,12 +37,14 @@ final class DashboardControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $container = static::getContainer();
+        /** @var UserPasswordHasherInterface $passwordHasher */
         $passwordHasher = $container->get(UserPasswordHasherInterface::class);
-        \assert($passwordHasher instanceof UserPasswordHasherInterface);
 
-        $user = new User();
-        $user->setEmail('dashboard@test.com');
-        $user->setPassword($passwordHasher->hashPassword($user, 'password'));
+        $email = new Email('dashboard@test.com');
+        $user = User::create($email, $passwordHasher->hashPassword(
+            User::create($email, ''),
+            'password',
+        ));
         $this->em->persist($user);
         $this->em->flush();
 
