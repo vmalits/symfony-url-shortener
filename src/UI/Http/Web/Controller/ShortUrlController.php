@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\UI\Http\Web\Controller;
 
 use App\Application\Click\Command\TrackClickCommand;
+use App\Domain\Click\ValueObject\IpAddress;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
 use App\Infrastructure\Cache\RedirectCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +35,7 @@ final class ShortUrlController extends AbstractController
 
         $this->bus->dispatch(new TrackClickCommand(
             $code,
-            $request->getClientIp() ?? 'unknown',
+            new IpAddress($request->getClientIp() ?? ''),
             $request->headers->get('User-Agent'),
             $request->headers->get('referer'),
         ));

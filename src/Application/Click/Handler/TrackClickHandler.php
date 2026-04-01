@@ -33,7 +33,7 @@ final readonly class TrackClickHandler
             $shortUrl,
             $message->ip,
             $message->userAgent,
-            $this->geoIpService->getCountryCode($message->ip),
+            $this->geoIpService->getCountryCode($message->ip->value()),
             $message->referrer,
         );
 

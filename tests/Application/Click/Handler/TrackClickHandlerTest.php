@@ -9,6 +9,7 @@ use App\Application\Click\Handler\TrackClickHandler;
 use App\Domain\Click\Entity\Click;
 use App\Domain\Click\Repository\ClickRepositoryInterface;
 use App\Domain\Click\Service\GeoIpInterface;
+use App\Domain\Click\ValueObject\IpAddress;
 use App\Domain\ShortUrl\Entity\ShortUrl;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -54,7 +55,7 @@ final class TrackClickHandlerTest extends TestCase
 
         $handler = new TrackClickHandler($this->shortUrlRepository, $this->clickRepository, $this->geoIpService);
 
-        $command = new TrackClickCommand('testcode', '127.0.0.1', 'TestAgent', 'https://google.com');
+        $command = new TrackClickCommand('testcode', new IpAddress('127.0.0.1'), 'TestAgent', 'https://google.com');
         $handler($command);
     }
 
@@ -72,7 +73,7 @@ final class TrackClickHandlerTest extends TestCase
 
         $handler = new TrackClickHandler($this->shortUrlRepository, $this->clickRepository, $this->geoIpService);
 
-        $command = new TrackClickCommand('nonexistent', '127.0.0.1', 'TestAgent', null);
+        $command = new TrackClickCommand('nonexistent', new IpAddress('127.0.0.1'), 'TestAgent', null);
         $handler($command);
     }
 }

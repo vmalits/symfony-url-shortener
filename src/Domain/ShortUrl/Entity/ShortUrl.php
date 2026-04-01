@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\ShortUrl\Entity;
 
 use App\Domain\Click\Entity\Click;
+use App\Domain\Click\ValueObject\IpAddress;
 use App\Domain\ShortUrl\ValueObject\ShortCode;
 use App\Domain\ShortUrl\ValueObject\Url;
 use App\Domain\User\Entity\User;
@@ -71,7 +72,7 @@ class ShortUrl
         return $this->user->getId() === $user->getId();
     }
 
-    public function recordClick(string $ip, ?string $userAgent, ?string $country, ?string $referrer): Click
+    public function recordClick(IpAddress $ip, ?string $userAgent, ?string $country, ?string $referrer): Click
     {
         $click = new Click($this, $ip, $userAgent, $country, $referrer);
         $this->clicks->add($click);
