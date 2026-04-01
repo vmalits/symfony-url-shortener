@@ -21,5 +21,3 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
 
             App\Application\Click\Command\TrackClickCommand: async
-            App\Domain\ShortUrl\Event\ShortUrlVisitedEvent: async
-            App\Domain\ShortUrl\Event\ShortUrlCreatedEvent: async

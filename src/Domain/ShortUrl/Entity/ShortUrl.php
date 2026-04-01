@@ -5,25 +5,19 @@ declare(strict_types=1);
 namespace App\Domain\ShortUrl\Entity;
 
 use App\Domain\Click\Entity\Click;
-use App\Domain\Shared\RecordsEvents;
-use App\Domain\ShortUrl\Event\ShortUrlCreatedEvent;
-use App\Domain\ShortUrl\Event\ShortUrlVisitedEvent;
 use App\Domain\ShortUrl\ValueObject\ShortCode;
 use App\Domain\ShortUrl\ValueObject\Url;
 use App\Domain\User\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class ShortUrl implements RecordsEvents
+class ShortUrl
 {
     private ?int $id = null;
     private readonly \DateTimeImmutable $createdAt;
 
     /** @var Collection<int, Click> */
     private Collection $clicks;
-
-    /** @var list<object> */
-    private array $domainEvents = [];
 
     private function __construct(
         private readonly string $originalUrl,
@@ -32,11 +26,6 @@ class ShortUrl implements RecordsEvents
     ) {
         $this->clicks = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
-        $this->recordEvent(new ShortUrlCreatedEvent(
-            $this->code,
-            $this->originalUrl,
-            $this->user->getId(),
-        ));
     }
 
     public static function create(Url $url, ShortCode $code, User $user): self
@@ -87,24 +76,6 @@ class ShortUrl implements RecordsEvents
         $click = new Click($this, $ip, $userAgent, $country, $referrer);
         $this->clicks->add($click);
 
-        $this->recordEvent(new ShortUrlVisitedEvent($this->code, $ip, $userAgent, $referrer));
-
         return $click;
-    }
-
-    private function recordEvent(object $event): void
-    {
-        $this->domainEvents[] = $event;
-    }
-
-    /**
-     * @return list<object>
-     */
-    public function releaseEvents(): array
-    {
-        $events = $this->domainEvents;
-        $this->domainEvents = [];
-
-        return $events;
     }
 }
