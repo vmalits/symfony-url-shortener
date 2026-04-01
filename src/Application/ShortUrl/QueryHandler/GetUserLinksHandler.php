@@ -33,9 +33,8 @@ final readonly class GetUserLinksHandler
             return ['pagination' => $this->paginator->paginate([], 1, $query->limit), 'shortUrls' => [], 'clickCounts' => []];
         }
 
-        $shortUrls = $this->repository->findByUser($user);
-
-        $pagination = $this->paginator->paginate($shortUrls, $query->page, $query->limit);
+        $qb = $this->repository->createUserQueryBuilder($user);
+        $pagination = $this->paginator->paginate($qb, $query->page, $query->limit);
 
         /** @var list<ShortUrl> $items */
         $items = array_values((array) $pagination->getItems());

@@ -6,6 +6,7 @@ namespace App\Domain\ShortUrl\Repository;
 
 use App\Domain\ShortUrl\Entity\ShortUrl;
 use App\Domain\User\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 
 interface ShortUrlRepositoryInterface
 {
@@ -17,6 +18,8 @@ interface ShortUrlRepositoryInterface
      * @return list<ShortUrl>
      */
     public function findByUser(User $user): array;
+
+    public function createUserQueryBuilder(User $user): QueryBuilder;
 
     /**
      * @return list<ShortUrl>

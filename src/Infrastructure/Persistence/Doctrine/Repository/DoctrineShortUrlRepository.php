@@ -8,6 +8,7 @@ use App\Domain\ShortUrl\Entity\ShortUrl;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
 use App\Domain\User\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 
 final readonly class DoctrineShortUrlRepository implements ShortUrlRepositoryInterface
 {
@@ -34,6 +35,15 @@ final readonly class DoctrineShortUrlRepository implements ShortUrlRepositoryInt
     public function findByUser(User $user): array
     {
         return $this->em->getRepository(ShortUrl::class)->findBy(['user' => $user], ['createdAt' => 'DESC']);
+    }
+
+    public function createUserQueryBuilder(User $user): QueryBuilder
+    {
+        return $this->em->getRepository(ShortUrl::class)
+            ->createQueryBuilder('s')
+            ->where('s.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('s.createdAt', 'DESC');
     }
 
     public function save(ShortUrl $shortUrl): void
