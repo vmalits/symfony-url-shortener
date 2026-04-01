@@ -23,6 +23,10 @@ final readonly class DeleteShortUrlHandler
             throw ShortUrlNotFoundException::byId($command->shortUrlId);
         }
 
+        if ($shortUrl->getUser()->getId() !== $command->userId) {
+            throw ShortUrlNotFoundException::byId($command->shortUrlId);
+        }
+
         $this->repository->remove($shortUrl);
     }
 }
