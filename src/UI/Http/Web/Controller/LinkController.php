@@ -16,11 +16,10 @@ use App\Domain\User\Entity\User;
 use App\Infrastructure\Cache\RedirectCache;
 use App\Infrastructure\Security\ShortUrlVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -63,7 +62,7 @@ final class LinkController extends AbstractController
         }
 
         try {
-            $shortUrl = $handler(new CreateShortUrlCommand(
+            $handler(new CreateShortUrlCommand(
                 $request->request->getString('originalUrl'),
                 $user->getId() ?? throw new \LogicException('User must have an ID'),
             ));
@@ -96,11 +95,13 @@ final class LinkController extends AbstractController
 
         $this->denyAccessUnlessGranted(ShortUrlVoter::DELETE, $shortUrl);
 
-        $this->redirectCache->invalidate($shortUrl->getCode());
+        $code = $shortUrl->getCode();
         $handler(new DeleteShortUrlCommand(
             $shortUrl->getId() ?? throw new \LogicException('ShortUrl must have an ID'),
             $user->getId() ?? throw new \LogicException('User must have an ID'),
         ));
+
+        $this->redirectCache->invalidate($code);
 
         $this->addFlash('success', 'Link deleted.');
 
