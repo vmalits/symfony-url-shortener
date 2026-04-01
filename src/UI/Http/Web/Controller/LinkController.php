@@ -18,6 +18,9 @@ use App\Infrastructure\Security\ShortUrlVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -26,6 +29,7 @@ final class LinkController extends AbstractController
 {
     public function __construct(
         private readonly RedirectCache $redirectCache,
+        #[Autowire(service: 'limiter.link_creation')] private readonly RateLimiterFactory $linkCreationLimiter,
     ) {
     }
 
@@ -49,6 +53,15 @@ final class LinkController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function create(Request $request, CreateShortUrlHandler $handler, #[CurrentUser] User $user): Response
     {
+        $limiter = $this->linkCreationLimiter->create($user->getUserIdentifier());
+        $limit = $limiter->consume();
+
+        if (!$limit->isAccepted()) {
+            $this->addFlash('error', 'Too many requests. Please wait before creating another link.');
+
+            return $this->redirectToRoute('app_links');
+        }
+
         try {
             $shortUrl = $handler(new CreateShortUrlCommand(
                 $request->request->getString('originalUrl'),
