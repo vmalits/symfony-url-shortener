@@ -15,4 +15,9 @@ final class InvalidUrlException extends \DomainException
     {
         return new self(sprintf('"%s" is not a valid URL.', $url));
     }
+
+    public static function unsafeScheme(string $url): self
+    {
+        return new self(sprintf('"%s" uses an unsafe scheme. Only http and https are allowed.', $url));
+    }
 }

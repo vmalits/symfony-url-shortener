@@ -18,6 +18,11 @@ final readonly class Url implements \Stringable
         if (false === filter_var($this->value, \FILTER_VALIDATE_URL)) {
             throw InvalidUrlException::invalid($this->value);
         }
+
+        $scheme = parse_url($this->value, \PHP_URL_SCHEME);
+        if (!\in_array($scheme, ['http', 'https'], true)) {
+            throw InvalidUrlException::unsafeScheme($this->value);
+        }
     }
 
     public function value(): string
