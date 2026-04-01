@@ -10,6 +10,6 @@ final class ShortCodeGenerator implements ShortCodeGeneratorInterface
 {
     public function generate(): string
     {
-        return substr(bin2hex(random_bytes(6)), 0, 10);
+        return bin2hex(random_bytes(5));
     }
 }
