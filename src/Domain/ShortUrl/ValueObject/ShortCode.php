@@ -18,6 +18,10 @@ final readonly class ShortCode implements \Stringable
         if (\strlen($this->value) > 10) {
             throw InvalidShortCodeException::tooLong($this->value);
         }
+
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $this->value)) {
+            throw InvalidShortCodeException::invalidCharacters($this->value);
+        }
     }
 
     public function value(): string

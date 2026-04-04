@@ -23,6 +23,10 @@ final readonly class Url implements \Stringable
         if (!\in_array($scheme, ['http', 'https'], true)) {
             throw InvalidUrlException::unsafeScheme($this->value);
         }
+
+        if (null !== parse_url($this->value, \PHP_URL_USER)) {
+            throw InvalidUrlException::embeddedCredentials($this->value);
+        }
     }
 
     public function value(): string

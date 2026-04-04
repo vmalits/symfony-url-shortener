@@ -15,4 +15,9 @@ final class InvalidShortCodeException extends \DomainException
     {
         return new self(sprintf('Short code "%s" is too long (max 10 characters).', $code));
     }
+
+    public static function invalidCharacters(string $code): self
+    {
+        return new self(sprintf('Short code "%s" contains invalid characters. Only alphanumeric, hyphens, and underscores are allowed.', $code));
+    }
 }

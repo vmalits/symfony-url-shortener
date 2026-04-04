@@ -13,11 +13,16 @@ final class InvalidUrlException extends \DomainException
 
     public static function invalid(string $url): self
     {
-        return new self(sprintf('"%s" is not a valid URL.', $url));
+        return new self(\sprintf('"%s" is not a valid URL.', $url));
     }
 
     public static function unsafeScheme(string $url): self
     {
-        return new self(sprintf('"%s" uses an unsafe scheme. Only http and https are allowed.', $url));
+        return new self(\sprintf('"%s" uses an unsafe scheme. Only http and https are allowed.', $url));
+    }
+
+    public static function embeddedCredentials(string $url): self
+    {
+        return new self('URLs with embedded credentials (user:pass@host) are not allowed.');
     }
 }
