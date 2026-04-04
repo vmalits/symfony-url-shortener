@@ -19,6 +19,11 @@ final class ClickChart
     #[LiveProp(writable: true)]
     public int $days = 7;
 
+    public function mount(int $days = 7): void
+    {
+        $this->days = max(1, min(365, $days));
+    }
+
     public function __construct(
         private readonly ClickRepositoryInterface $clickRepository,
         private readonly ChartBuilderInterface $chartBuilder,

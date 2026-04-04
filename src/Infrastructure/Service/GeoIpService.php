@@ -7,6 +7,7 @@ namespace App\Infrastructure\Service;
 use App\Domain\Click\Service\GeoIpInterface;
 use GeoIp2\Database\Reader;
 use GeoIp2\Exception\AddressNotFoundException;
+use GeoIp2\Exception\GeoIp2Exception;
 
 final class GeoIpService implements GeoIpInterface
 {
@@ -28,7 +29,7 @@ final class GeoIpService implements GeoIpInterface
             $record = $this->reader->country($ip);
 
             return $record->country->isoCode;
-        } catch (AddressNotFoundException|\Exception) {
+        } catch (AddressNotFoundException|GeoIp2Exception) {
             return null;
         }
     }

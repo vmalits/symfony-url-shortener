@@ -11,7 +11,7 @@
         </id>
 
         <field name="ip" type="string" column="ip" length="45"/>
-        <field name="userAgent" type="string" column="user_agent" length="255" nullable="true"/>
+        <field name="userAgent" type="text" column="user_agent" nullable="true"/>
         <field name="country" type="string" column="country" length="2" nullable="true"/>
         <field name="referrer" type="string" column="referrer" length="2048" nullable="true"/>
         <field name="createdAt" type="datetime_immutable" column="created_at"/>
@@ -19,6 +19,12 @@
         <many-to-one field="shortUrl" target-entity="App\Domain\ShortUrl\Entity\ShortUrl" inversed-by="clicks">
             <join-column name="short_urls_id" referenced-column-name="id" nullable="false"/>
         </many-to-one>
+
+        <indexes>
+            <index name="IDX_CLICKS_CREATED_AT" columns="created_at"/>
+            <index name="IDX_CLICKS_COUNTRY" columns="country"/>
+            <index name="IDX_CLICKS_SHORT_URL_CREATED" columns="short_urls_id,created_at"/>
+        </indexes>
 
     </entity>
 

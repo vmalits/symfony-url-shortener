@@ -8,13 +8,14 @@ use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use App\Domain\User\ValueObject\Email;
 use App\UI\Http\Web\Form\RegistrationFormType;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-class RegistrationController extends AbstractController
+final class RegistrationController extends AbstractController
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
@@ -41,7 +42,14 @@ class RegistrationController extends AbstractController
             );
 
             $user = User::create($email, $hashedPassword);
-            $this->userRepository->save($user);
+
+            try {
+                $this->userRepository->save($user);
+            } catch (UniqueConstraintViolationException) {
+                $this->addFlash('error', 'This email is already registered.');
+
+                return $this->redirectToRoute('app_register');
+            }
 
             return $this->redirectToRoute('app_dashboard');
         }
