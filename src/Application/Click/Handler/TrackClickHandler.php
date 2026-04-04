@@ -9,6 +9,7 @@ use App\Domain\Click\Entity\Click;
 use App\Domain\Click\Repository\ClickRepositoryInterface;
 use App\Domain\Click\Service\GeoIpInterface;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -18,6 +19,7 @@ final readonly class TrackClickHandler
         private ShortUrlRepositoryInterface $shortUrlRepository,
         private ClickRepositoryInterface $clickRepository,
         private GeoIpInterface $geoIpService,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -26,6 +28,8 @@ final readonly class TrackClickHandler
         $shortUrl = $this->shortUrlRepository->findByCode($message->code);
 
         if (null === $shortUrl) {
+            $this->logger->warning('Click tracked for non-existent short code', ['code' => $message->code]);
+
             return;
         }
 

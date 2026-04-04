@@ -6,10 +6,12 @@ namespace App\Application\ShortUrl\Handler;
 
 use App\Application\ShortUrl\Command\CreateShortUrlCommand;
 use App\Domain\ShortUrl\Entity\ShortUrl;
+use App\Domain\ShortUrl\Exception\ShortCodeGenerationFailedException;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
 use App\Domain\ShortUrl\Service\ShortCodeGeneratorInterface;
 use App\Domain\ShortUrl\ValueObject\ShortCode;
 use App\Domain\ShortUrl\ValueObject\Url;
+use App\Domain\User\Exception\UserNotFoundException;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
@@ -27,7 +29,7 @@ final readonly class CreateShortUrlHandler
         $user = $this->userRepository->findById($command->userId);
 
         if (null === $user) {
-            throw new \RuntimeException('User not found.');
+            throw UserNotFoundException::byId($command->userId);
         }
 
         $originalUrl = new Url($command->originalUrl);
@@ -48,6 +50,6 @@ final readonly class CreateShortUrlHandler
             }
         }
 
-        throw new \RuntimeException('Failed to generate unique short code');
+        throw ShortCodeGenerationFailedException::maxRetriesExceeded(3);
     }
 }

@@ -7,6 +7,7 @@ namespace App\Application\ShortUrl\Handler;
 use App\Application\ShortUrl\Command\DeleteShortUrlCommand;
 use App\Domain\ShortUrl\Exception\ShortUrlNotFoundException;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 final readonly class DeleteShortUrlHandler
 {
@@ -24,7 +25,7 @@ final readonly class DeleteShortUrlHandler
         }
 
         if ($shortUrl->getUser()->getId() !== $command->userId) {
-            throw ShortUrlNotFoundException::byId($command->shortUrlId);
+            throw new AccessDeniedException('You do not own this short URL.');
         }
 
         $this->repository->remove($shortUrl);

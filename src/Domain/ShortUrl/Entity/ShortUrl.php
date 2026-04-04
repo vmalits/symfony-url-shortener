@@ -69,7 +69,14 @@ class ShortUrl
 
     public function belongsTo(User $user): bool
     {
-        return $this->user->getId() === $user->getId();
+        $thisId = $this->user->getId();
+        $otherId = $user->getId();
+
+        if (null === $thisId || null === $otherId) {
+            return false;
+        }
+
+        return $thisId === $otherId;
     }
 
     public function recordClick(IpAddress $ip, ?string $userAgent, ?string $country, ?string $referrer): Click

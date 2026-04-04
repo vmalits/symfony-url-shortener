@@ -48,6 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return non-empty-string
      */
+    #[\Override]
     public function getUserIdentifier(): string
     {
         if ('' === $this->email) {
@@ -60,6 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return list<string>
      */
+    #[\Override]
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -68,6 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_values(array_unique($roles));
     }
 
+    #[\Override]
     public function getPassword(): ?string
     {
         return $this->password;
@@ -85,9 +88,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __serialize(): array
     {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        return [
+            $this->id,
+            $this->email,
+            $this->password,
+            $this->roles,
+        ];
+    }
 
-        return $data;
+    /**
+     * @param array<int, mixed> $data
+     */
+    public function __unserialize(array $data): void
+    {
+        [$this->id, $this->email, $this->password, $this->roles] = $data;
+        $this->shortUrls = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 }
