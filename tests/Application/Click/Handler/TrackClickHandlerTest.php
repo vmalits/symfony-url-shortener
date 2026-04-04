@@ -14,35 +14,39 @@ use App\Domain\ShortUrl\Entity\ShortUrl;
 use App\Domain\ShortUrl\Repository\ShortUrlRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 final class TrackClickHandlerTest extends TestCase
 {
     private ShortUrlRepositoryInterface&MockObject $shortUrlRepository;
     private ClickRepositoryInterface&MockObject $clickRepository;
-    private GeoIpInterface&MockObject $geoIpService;
+    private GeoIpInterface $geoIpService;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->shortUrlRepository = $this->createMock(ShortUrlRepositoryInterface::class);
         $this->clickRepository = $this->createMock(ClickRepositoryInterface::class);
-        $this->geoIpService = $this->createMock(GeoIpInterface::class);
+        $this->geoIpService = $this->createStub(GeoIpInterface::class);
+        $this->logger = $this->createStub(LoggerInterface::class);
     }
 
     public function testHandlerCreatesClick(): void
     {
-        $shortUrl = $this->createMock(ShortUrl::class);
+        $shortUrl = $this->createStub(ShortUrl::class);
+
+        $geoIpService = $this->createMock(GeoIpInterface::class);
+        $geoIpService
+            ->expects($this->once())
+            ->method('getCountryCode')
+            ->with('127.0.0.1')
+            ->willReturn('US');
 
         $this->shortUrlRepository
             ->expects($this->once())
             ->method('findByCode')
             ->with('testcode')
             ->willReturn($shortUrl);
-
-        $this->geoIpService
-            ->expects($this->once())
-            ->method('getCountryCode')
-            ->with('127.0.0.1')
-            ->willReturn('US');
 
         $this->clickRepository
             ->expects($this->once())
@@ -53,7 +57,7 @@ final class TrackClickHandlerTest extends TestCase
                 && 'https://google.com' === $click->getReferrer()
                 && 'US' === $click->getCountry()));
 
-        $handler = new TrackClickHandler($this->shortUrlRepository, $this->clickRepository, $this->geoIpService);
+        $handler = new TrackClickHandler($this->shortUrlRepository, $this->clickRepository, $geoIpService, $this->logger);
 
         $command = new TrackClickCommand('testcode', new IpAddress('127.0.0.1'), 'TestAgent', 'https://google.com');
         $handler($command);
@@ -71,7 +75,7 @@ final class TrackClickHandlerTest extends TestCase
             ->expects($this->never())
             ->method('save');
 
-        $handler = new TrackClickHandler($this->shortUrlRepository, $this->clickRepository, $this->geoIpService);
+        $handler = new TrackClickHandler($this->shortUrlRepository, $this->clickRepository, $this->geoIpService, $this->logger);
 
         $command = new TrackClickCommand('nonexistent', new IpAddress('127.0.0.1'), 'TestAgent', null);
         $handler($command);

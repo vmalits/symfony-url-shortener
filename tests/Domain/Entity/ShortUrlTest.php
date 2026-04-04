@@ -44,6 +44,9 @@ final class ShortUrlTest extends TestCase
             $this->user,
         );
 
+        $ref = new \ReflectionProperty($this->user, 'id');
+        $ref->setValue($this->user, 1);
+
         $this->assertTrue($shortUrl->belongsTo($this->user));
     }
 
@@ -55,10 +58,21 @@ final class ShortUrlTest extends TestCase
             $this->user,
         );
 
-        // Both new users have null ID, so belongsTo returns true
-        // This is expected behavior — IDs are assigned by Doctrine
         $otherUser = User::create(new Email('other@example.com'), 'hashed_password');
-        $this->assertTrue($shortUrl->belongsTo($otherUser));
+        $this->assertFalse($shortUrl->belongsTo($otherUser));
+    }
+
+    public function testBelongsToReturnsFalseForUnpersistedUsers(): void
+    {
+        $shortUrl = ShortUrl::create(
+            new Url('https://example.com'),
+            new ShortCode('abc123'),
+            $this->user,
+        );
+
+        $otherUser = User::create(new Email('other@example.com'), 'hashed_password');
+
+        $this->assertFalse($shortUrl->belongsTo($otherUser));
     }
 
     public function testRecordClick(): void

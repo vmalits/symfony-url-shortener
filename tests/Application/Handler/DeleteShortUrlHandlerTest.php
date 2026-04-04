@@ -15,6 +15,7 @@ use App\Domain\User\Entity\User;
 use App\Domain\User\ValueObject\Email;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 final class DeleteShortUrlHandlerTest extends TestCase
 {
@@ -74,7 +75,7 @@ final class DeleteShortUrlHandlerTest extends TestCase
 
         $handler = new DeleteShortUrlHandler($this->repository);
 
-        $this->expectException(ShortUrlNotFoundException::class);
+        $this->expectException(AccessDeniedException::class);
         $handler(new DeleteShortUrlCommand(1, 999));
     }
 
